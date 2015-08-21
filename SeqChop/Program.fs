@@ -7,8 +7,8 @@ module SeqChop =
     let SubSequenceSafe segmentSize source = 
         let rec subSequence size acc src = 
             seq {
-                match Seq.isEmpty src, size with 
-                |   true, _     ->  yield (List.rev acc |> List.toSeq)
+                match not <| Seq.isEmpty src, size with 
+                |   false, _    ->  yield (List.rev acc |> List.toSeq)
                 |   _, 0        ->  yield (List.rev acc |> List.toSeq)
                                     yield! subSequence segmentSize [] src
                 |   _           ->  yield! subSequence (size - 1) (Seq.head src :: acc) (Seq.skip 1 src) 
@@ -49,7 +49,7 @@ let main argv =
     
     let x = [|1; 2; 3; 4; 5; 6; 7|]
     
-    let y = SeqChop.SubSequence 3 x
+    let y = SeqChop.SubSequenceSafe 3 x
 
     y 
     |>  Seq.iter
