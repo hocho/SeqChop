@@ -1,18 +1,19 @@
-﻿
+﻿open System
+
 module SeqChop = 
 
     // sub sequences are captured as a list
     // is a safe alternate since the caller cannot affect the seq of seq
-    let Seqment segmentSize source = 
-        let rec seqment size acc src = 
+    let SubSequenceSafe segmentSize source = 
+        let rec subSequence size acc src = 
             seq {
                 match Seq.isEmpty src, size with 
                 |   true, _     ->  yield (List.rev acc |> List.toSeq)
                 |   _, 0        ->  yield (List.rev acc |> List.toSeq)
-                                    yield! seqment segmentSize [] src
-                |   _           ->  yield! seqment (size - 1) (Seq.head src :: acc) (Seq.skip 1 src) 
+                                    yield! subSequence segmentSize [] src
+                |   _           ->  yield! subSequence (size - 1) (Seq.head src :: acc) (Seq.skip 1 src) 
             }   
-        seqment segmentSize [] source 
+        subSequence segmentSize [] source 
 
 
     // uses a mutable to capture the state of the sequence
@@ -55,5 +56,10 @@ let main argv =
             (fun sub -> 
                 sub |> Seq.iter (printf "%A")
                 printfn "") 
+
+    
+    Console.WriteLine ()
+    Console.WriteLine "Enter to exit ..."        
+    Console.ReadLine () |> ignore
 
     0 // return an integer exit code
